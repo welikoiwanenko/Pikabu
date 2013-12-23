@@ -1,0 +1,223 @@
+﻿<phone:PhoneApplicationPage x:Class="Pikabu.MainPage"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:conv="clr-namespace:Pikabu.Converters"
+                            xmlns:abu="clr-namespace:AppBarUtils;assembly=AppBarUtils"
+                            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+                            xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+                            xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+                            FontFamily="{StaticResource PhoneFontFamilyNormal}"
+                            FontSize="{StaticResource PhoneFontSizeNormal}"
+                            Foreground="{StaticResource PhoneForegroundBrush}"
+                            Loaded="PhoneApplicationPage_Loaded"
+                            Orientation="Portrait"
+                            SupportedOrientations="Portrait"
+                            d:DesignHeight="768"
+                            d:DesignWidth="480"
+                            shell:SystemTray.IsVisible="True"
+                            shell:SystemTray.Opacity="0"
+                            mc:Ignorable="d">
+    <phone:PhoneApplicationPage.Resources>
+        <conv:SortConverter x:Key="SortConverter"></conv:SortConverter>
+        <DataTemplate x:Key="HotLLSTemplate">
+            <Grid Height="100" Margin="12,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top"
+                                           Source="{Binding Image}"
+                                           Stretch="UniformToFill" />
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Foreground="Black" Margin="12,0,0,0" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="Light" Text="{Binding Title}" FontFamily="Segoe WP Light"></TextBlock>
+                    <Grid Grid.Row="1" Margin="12 0 0 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="9*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="15*" />
+                            <ColumnDefinition Width="30*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text=""></TextBlock>
+                            <TextBlock Text="{Binding Rating}" Foreground="Black"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <TextBlock Text="+" Foreground="Green"></TextBlock>
+                            <TextBlock Text="{Binding Pluses}" Foreground="Green"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="2">
+                            <TextBlock Text="-" Foreground="Red"></TextBlock>
+                            <TextBlock Text="{Binding Minuses}" Foreground="Red"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="3">
+                            <TextBlock Foreground="Black" Opacity="0.75" FontFamily="Segoe UI Symbol">&#xe15f;</TextBlock>
+                            <TextBlock Text="{Binding CommentsCount}" Foreground="Black"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="FavoritesLLSTemplate">
+            <Grid Height="100" Margin="12,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top"
+                                           Source="{Binding ThumbImage}"
+                                           Stretch="UniformToFill" />
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Foreground="Black" Margin="12,0,0,0" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="Light" Text="{Binding Title}" FontFamily="Segoe WP Light"></TextBlock>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+    
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar Mode="Minimized" BackgroundColor="#FF25A22A" ForegroundColor="White" Opacity="1">
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Click="Settings_Click" Text="настройки"></shell:ApplicationBarMenuItem>
+                <shell:ApplicationBarMenuItem Click="About_Click" Text="о программе"></shell:ApplicationBarMenuItem>
+            </shell:ApplicationBar.MenuItems>
+            <shell:ApplicationBar.Buttons>
+                <shell:ApplicationBarIconButton IconUri="/Assets/AppBar/appbar.refresh.rest.png" Text="обновить" Click="Refresh_Click"></shell:ApplicationBarIconButton>
+                <shell:ApplicationBarIconButton IconUri="/Assets/AppBar/appbar.favs.rest.png" Text="избранное" Click="Favorites_Click"></shell:ApplicationBarIconButton>
+            </shell:ApplicationBar.Buttons>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+    
+    <!--  LayoutRoot представляет корневую сетку, где размещается все содержимое страницы  -->
+    <Grid x:Name="LayoutRoot" Background="#FFF3F3F3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        
+        <!--Зелёный фон и тень-->
+        <StackPanel VerticalAlignment="Top" Grid.RowSpan="2">
+            <Rectangle Fill="#FF25A22A" Grid.RowSpan="2" VerticalAlignment="Top" Height="145"/>
+        </StackPanel>
+        
+        <!--Картинка-заголовок-->
+        <StackPanel x:Name="TitlePanel"
+                    Grid.Row="0"
+                    Margin="0">
+            <Image MaxHeight="50"
+                   Margin="24,36,0,0"
+                   HorizontalAlignment="Left"
+                   Source="/Images/logobig.png" />
+        </StackPanel>
+
+        <!--  ContentPanel — поместите здесь дополнительное содержимое  -->
+        <Grid x:Name="ControlPanel" Grid.Row="1">
+            <controls:Pivot Grid.Row="1" Margin="0,-15,0,0">
+                <!--<i:Interaction.Triggers>
+                    <abu:SelectedPivotItemChangedTrigger>
+                        <abu:SelectedPivotItemChangedTrigger.SelectionMappings>
+                            <abu:SelectionMapping SourceIndex="0" TargetIndex="0" />
+                            <abu:SelectionMapping SourceIndex="1" TargetIndex="0" />
+                            <abu:SelectionMapping SourceIndex="2" TargetIndex="1" />
+                        </abu:SelectedPivotItemChangedTrigger.SelectionMappings>
+                        <abu:SwitchAppBarAction>
+                            <abu:AppBar BackgroundColor="#FF25A22A" Id="0" Mode="Minimized">
+                                <abu:AppBar.MenuItems>
+                                    <abu:AppBarMenuItem Command="{Binding AboutPageCommand}" Text="про додаток" />
+                                </abu:AppBar.MenuItems>
+                                <abu:AppBarButton Command="{Binding LoadDataCommand}"
+                                                  IconUri="/Assets/AppBar/refresh.png"
+                                                  Text="обновить" />
+                            </abu:AppBar>
+                            <abu:AppBar BackgroundColor="#FF25A22A"
+                                    Id="1"
+                                    Mode="Default">
+                                <abu:AppBar.Buttons>
+                                    <abu:AppBarButton></abu:AppBarButton>
+                                </abu:AppBar.Buttons>
+                            </abu:AppBar>
+                        </abu:SwitchAppBarAction>
+                    </abu:SelectedPivotItemChangedTrigger>
+                </i:Interaction.Triggers>-->
+                <controls:PivotItem x:Name="HotStoryTab">
+                    <controls:PivotItem.Header>
+                        <TextBlock FontFamily="Segoe WP Light"
+                               FontSize="40"
+                               Foreground="White">
+                        горячее
+                        </TextBlock>
+                    </controls:PivotItem.Header>
+                    <controls:PivotItem.Content>
+                        <Grid>
+                            <phone:LongListSelector Background="Transparent"
+                                                      x:Name="LLSHot"
+                                                      Margin="0,0,0,0"
+                                                      ItemsSource="{Binding StoriesSource, Converter={StaticResource SortConverter}}"
+                                                      ItemTemplate="{StaticResource HotLLSTemplate}"
+                                                      SelectionChanged="HotStoryLLS_SelectionChanged">
+                            </phone:LongListSelector>
+                            <TextBlock Foreground="Gray" x:Name="errorTextBlock" Visibility="Collapsed" Style="{StaticResource PhoneTextGroupHeaderStyle}" TextWrapping="Wrap">
+                                Отсутствует Интернет-соединение или сервер не отвечает
+                            </TextBlock>
+                        </Grid>
+                    </controls:PivotItem.Content>
+                </controls:PivotItem>
+                <controls:PivotItem x:Name="BestStoryTab">
+                    <controls:PivotItem.Header>
+                        <TextBlock FontFamily="Segoe WP Light"
+                               FontSize="40"
+                               Foreground="White">
+                        лучшее из горячего
+                        </TextBlock>
+                    </controls:PivotItem.Header>
+                    <controls:PivotItem.Content>
+                        <!--<TextBlock Foreground="Gray" Style="{StaticResource PhoneTextGroupHeaderStyle}" Text="{Binding TextBoxText}"></TextBlock>-->
+                        <phone:LongListSelector Background="Transparent"
+                                                      x:Name="LLSBestHot"
+                                                      ItemTemplate="{StaticResource HotLLSTemplate}"
+                                                      
+                                                  SelectionChanged="LLSBestHot_SelectionChanged"
+                                                      Margin="0,0,0,0" ItemsSource="{Binding BestStoriesSource}">
+                            
+                        </phone:LongListSelector>
+                    </controls:PivotItem.Content>
+                </controls:PivotItem>
+            </controls:Pivot>
+        </Grid>
+    </Grid>
+    <toolkit:TransitionService.NavigationInTransition>
+        <toolkit:NavigationInTransition>
+            <toolkit:NavigationInTransition.Backward>
+                <toolkit:SlideTransition  Mode="SlideDownFadeIn"/>
+            </toolkit:NavigationInTransition.Backward>
+            <toolkit:NavigationInTransition.Forward>
+                <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
+            </toolkit:NavigationInTransition.Forward>
+        </toolkit:NavigationInTransition>
+    </toolkit:TransitionService.NavigationInTransition>
+    <toolkit:TransitionService.NavigationOutTransition>
+        <toolkit:NavigationOutTransition>
+            <toolkit:NavigationOutTransition.Backward>
+                <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
+            </toolkit:NavigationOutTransition.Backward>
+            <toolkit:NavigationOutTransition.Forward>
+                <toolkit:SlideTransition Mode="SlideUpFadeOut"/>
+            </toolkit:NavigationOutTransition.Forward>
+        </toolkit:NavigationOutTransition>
+    </toolkit:TransitionService.NavigationOutTransition>
+</phone:PhoneApplicationPage>
